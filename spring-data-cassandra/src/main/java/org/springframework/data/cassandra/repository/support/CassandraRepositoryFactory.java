@@ -32,10 +32,12 @@ import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
-import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.QueryLookupStrategy.Key;
+import org.springframework.data.repository.query.QueryMethod;
+import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider;
 import org.springframework.data.repository.query.RepositoryQuery;
+import org.springframework.data.spel.EvaluationContextProvider;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -107,19 +109,20 @@ public class CassandraRepositoryFactory extends RepositoryFactorySupport {
 	 */
 	@Override
 	protected Optional<QueryLookupStrategy> getQueryLookupStrategy(@Nullable Key key,
-			EvaluationContextProvider evaluationContextProvider) {
+			QueryMethodEvaluationContextProvider evaluationContextProvider) {
+
 		return Optional.of(new CassandraQueryLookupStrategy(operations, evaluationContextProvider, mappingContext));
 	}
 
 	private class CassandraQueryLookupStrategy implements QueryLookupStrategy {
 
-		private final EvaluationContextProvider evaluationContextProvider;
+		private final QueryMethodEvaluationContextProvider evaluationContextProvider;
 
 		private final MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext;
 
 		private final CassandraOperations operations;
 
-		CassandraQueryLookupStrategy(CassandraOperations operations, EvaluationContextProvider evaluationContextProvider,
+		CassandraQueryLookupStrategy(CassandraOperations operations, QueryMethodEvaluationContextProvider evaluationContextProvider,
 				MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext) {
 
 			this.operations = operations;
